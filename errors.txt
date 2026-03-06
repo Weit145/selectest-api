@@ -1,0 +1,26 @@
+1) core/config.py: validation_alias="DATABSE_URL", -> validation_alias="DATABASE_URL", 
+
+2)services/parser: "city_name": item.city.name, -> "city_name": check(item.city),
+
+3)services/sheduler: seconds=settings.parse_schedule_minutes, -> minutes=settings.parse_schedule_minutes,
+
+4)api/v1/vacancies: response_model=List[VacancyRead] а выход List[Vacancy] -> app/utils
+
+5)api/v1/vacancies: 
+                    @router.post("/", response_model=VacancyRead, status_code=status.HTTP_201_CREATED)
+                    async def create_vacancy_endpoint(
+                        payload: VacancyCreate, session: AsyncSession = Depends(get_session)
+                    ) -> VacancyRead:
+                        if payload.external_id is not None:
+                            existing = await get_vacancy_by_external_id(session, payload.external_id)
+                            if existing:
+                                return JSONResponse(
+                                    status_code=status.HTTP_200_OK,
+                                    content={"detail": "Vacancy with external_id already exists"},
+                                )
+                ---> status_code=status.HTTP_409_CONFLICT,
+
+6)services/parser: client = httpx.AsyncClient(timeout=timeout) -> async with httpx.AsyncClient(timeout=timeout) as client:
+
+
+7) existing_ids = {} -> existing_ids = set()
