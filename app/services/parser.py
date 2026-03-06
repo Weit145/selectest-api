@@ -25,14 +25,15 @@ async def fetch_page(client: httpx.AsyncClient, page: int) -> ExternalVacanciesR
 async def parse_and_store(session: AsyncSession) -> int:
     logger.info("Старт парсинга вакансий")
     created_total = 0
+    
 
     timeout = httpx.Timeout(10.0, read=20.0)
     try:
         async with httpx.AsyncClient(timeout=timeout) as client:
             page = 1
             while True:
-                payload = await fetch_page(client, page)
                 parsed_payloads = []
+                payload = await fetch_page(client, page)
                 for item in payload.items:
                     parsed_payloads.append(
                         {
@@ -46,17 +47,16 @@ async def parse_and_store(session: AsyncSession) -> int:
                             "is_hot": item.is_hot,
                         }
                     )
-
+                    
                 created_count = await upsert_external_vacancies(session, parsed_payloads)
                 created_total += created_count
-
                 if page >= payload.page_count:
                     break
                 page += 1
     except (httpx.RequestError, httpx.HTTPStatusError) as exc:
         logger.exception("Ошибка парсинга вакансий: %s", exc)
         return 0
-
+    
     logger.info("Парсинг завершен, новых вакансий: %s", created_total)
     return created_total
 

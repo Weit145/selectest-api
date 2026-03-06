@@ -24,3 +24,10 @@
 
 
 7) existing_ids = {} -> existing_ids = set()
+
+8) if ext_id and ext_id in existing_ids -> if ext_id  in existing_ids
+
+9)requirements.txt: fastapi==999.0.0; python_version < "3.8" -> fastapi==0.124.4; python_version > "3.8"
+
+10)core/config: "postgresql+asyncpg://postgres:postgres@db:5432/postgres_typo", -> "postgresql+asyncpg://postgres:postgres@db:5432/postgres",
+

@@ -74,7 +74,7 @@ async def upsert_external_vacancies(
     created_count = 0
     for payload in payloads:
         ext_id = payload["external_id"]
-        if ext_id and ext_id in existing_ids:
+        if ext_id  in existing_ids:
             result = await session.execute(
                 select(Vacancy).where(Vacancy.external_id == ext_id)
             )
